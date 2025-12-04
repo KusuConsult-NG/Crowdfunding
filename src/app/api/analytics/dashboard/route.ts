@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
         // Group by date
         const trendsByDate: Record<string, { date: string; amount: number; count: number }> = {};
 
-        donations.forEach((donation) => {
+        donations.forEach((donation: { createdAt: Date; amount: number }) => {
             const dateKey = format(donation.createdAt, 'yyyy-MM-dd');
             if (!trendsByDate[dateKey]) {
                 trendsByDate[dateKey] = {
