@@ -41,7 +41,7 @@ export default async function Home() {
         <div className="container">
           <h2 className={styles.sectionTitle}>Featured Campaigns</h2>
           <div className={styles.campaignsGrid}>
-            {campaigns.map((campaign) => (
+            {campaigns.map((campaign: any) => (
               <Card key={campaign.id} className={styles.campaignCard}>
                 <CardHeader>
                   <CardTitle>{campaign.title}</CardTitle>
