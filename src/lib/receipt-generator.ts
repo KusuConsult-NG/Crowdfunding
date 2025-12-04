@@ -1,9 +1,9 @@
 /**
- * Generate a unique receipt code for cash donations
- * Format: CASH-YYYYMMDD-RANDOM6
+ * Generate a unique receipt code for donations
+ * Format: TYPE-YYYYMMDD-RANDOM6
  * Example: CASH-20241204-A8X9K2
  */
-export function generateReceiptCode(): string {
+export function generateReceiptCode(type: string = 'CASH'): string {
     const date = new Date();
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -18,7 +18,7 @@ export function generateReceiptCode(): string {
         randomCode += chars.charAt(Math.floor(Math.random() * chars.length));
     }
 
-    return `CASH-${dateStr}-${randomCode}`;
+    return `${type}-${dateStr}-${randomCode}`;
 }
 
 /**
