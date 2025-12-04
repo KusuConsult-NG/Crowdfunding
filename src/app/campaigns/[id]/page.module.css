@@ -1,0 +1,137 @@
+.campaignDetail {
+    padding: 3rem 0;
+}
+
+.backLink {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    color: var(--primary);
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.backLink:hover {
+    color: var(--primary-hover);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.campaignHeader {
+    margin-bottom: 2rem;
+}
+
+.campaignTitle {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.campaignDescription {
+    font-size: 1.125rem;
+    line-height: 1.75;
+    color: var(--muted-foreground);
+}
+
+.statsCard {
+    position: sticky;
+    top: 2rem;
+}
+
+.statItem {
+    margin-bottom: 1.5rem;
+}
+
+.statLabel {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    margin-bottom: 0.25rem;
+}
+
+.statValue {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.donationForm {
+    margin-top: 2rem;
+}
+
+.formGroup {
+    margin-bottom: 1.5rem;
+}
+
+.label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.checkbox {
+    margin-right: 0.5rem;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+}
+
+/* Donate Button Section */
+.donateSection {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+    border: 2px solid var(--primary);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.donateSectionTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--foreground);
+}
+
+.donateSectionSubtitle {
+    font-size: 1rem;
+    color: var(--muted-foreground);
+    margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .donateSection {
+        padding: 1.5rem;
+    }
+
+    .donateSectionTitle {
+        font-size: 1.25rem;
+    }
+}

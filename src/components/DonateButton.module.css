@@ -1,0 +1,72 @@
+/* Donate Button Styles */
+.donate-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.donate-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+    background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%);
+}
+
+.donate-button:active {
+    transform: translateY(0);
+}
+
+.donate-button svg {
+    animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    10%,
+    30% {
+        transform: scale(1.1);
+    }
+
+    20%,
+    40% {
+        transform: scale(1);
+    }
+}
+
+/* Sizes */
+.donate-button-small {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+.donate-button-medium {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+}
+
+.donate-button-large {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+}
+
+/* Mobile optimization */
+@media (max-width: 768px) {
+    .donate-button-large {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1rem;
+    }
+}

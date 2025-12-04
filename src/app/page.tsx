@@ -1,66 +1,78 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import Link from 'next/link';
+import { Button } from '@/components/ui/Button';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/Card';
+import { ProgressBar } from '@/components/ui/ProgressBar';
+import { prisma } from '@/lib/prisma';
+import styles from './page.module.css';
 
-export default function Home() {
+function formatCurrency(amount: number, currency: string = 'NGN') {
+  return new Intl.NumberFormat('en-NG', {
+    style: 'currency',
+    currency: currency,
+    minimumFractionDigits: 0,
+  }).format(amount);
+}
+
+export default async function Home() {
+  // Fetch active campaigns from database
+  const campaigns = await prisma.campaign.findMany({
+    where: { status: 'ACTIVE' },
+    take: 6,
+    orderBy: { createdAt: 'desc' },
+  });
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div>
+      {/* Hero Section */}
+      <section className={styles.hero}>
+        <div className="container">
+          <h1 className={styles.heroTitle}>Support God's Work</h1>
+          <p className={styles.heroSubtitle}>
+            Join us in making a difference through your generosity
           </p>
+          <Link href="/campaigns">
+            <Button variant="secondary">View All Campaigns</Button>
+          </Link>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* Featured Campaigns */}
+      <section className={styles.campaignsSection}>
+        <div className="container">
+          <h2 className={styles.sectionTitle}>Featured Campaigns</h2>
+          <div className={styles.campaignsGrid}>
+            {campaigns.map((campaign) => (
+              <Card key={campaign.id} className={styles.campaignCard}>
+                <CardHeader>
+                  <CardTitle>{campaign.title}</CardTitle>
+                  <CardDescription>{campaign.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className={styles.progressSection}>
+                    <ProgressBar
+                      value={campaign.currentAmount}
+                      max={campaign.targetAmount}
+                    />
+                  </div>
+                  <div className={styles.campaignStats}>
+                    <span className={styles.amountRaised}>
+                      {formatCurrency(campaign.currentAmount, campaign.currency)}
+                    </span>
+                    <span className={styles.targetAmount}>
+                      of {formatCurrency(campaign.targetAmount, campaign.currency)}
+                    </span>
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Link href={`/campaigns/${campaign.id}`} style={{ width: '100%' }}>
+                    <Button fullWidth>Donate Now</Button>
+                  </Link>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
         </div>
-      </main>
+      </section>
     </div>
   );
 }

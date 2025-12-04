@@ -1,0 +1,226 @@
+.page {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+}
+
+.header h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.header p {
+    margin: 0;
+    color: var(--muted-foreground);
+}
+
+.periodSelector {
+    display: flex;
+    gap: 0.5rem;
+    background: var(--muted);
+    padding: 0.25rem;
+    border-radius: var(--radius);
+}
+
+.periodSelector button {
+    padding: 0.5rem 1rem;
+    border: none;
+    background: transparent;
+    border-radius: calc(var(--radius) - 2px);
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--muted-foreground);
+    transition: all 0.2s;
+}
+
+.periodSelector button:hover {
+    background: white;
+    color: var(--foreground);
+}
+
+.periodSelector button.active {
+    background: white;
+    color: var(--primary);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.statCard .statLabel {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    margin-bottom: 0.5rem;
+}
+
+.statCard .statValue {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.25rem;
+}
+
+.statCard .statSubtext {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+}
+
+.chartsRow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.chartCard {
+    min-height: 400px;
+}
+
+.tablesRow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+}
+
+.tableCard {
+    min-height: 400px;
+}
+
+.campaignsList,
+.donorsList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.campaignItem,
+.donorItem {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1rem;
+    background: var(--muted);
+    border-radius: var(--radius);
+    transition: background 0.2s;
+}
+
+.campaignItem:hover,
+.donorItem:hover {
+    background: var(--accent);
+}
+
+.campaignRank,
+.donorRank {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--muted-foreground);
+    min-width: 40px;
+    text-align: center;
+}
+
+.campaignInfo,
+.donorInfo {
+    flex: 1;
+}
+
+.campaignTitle {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.campaignProgress {
+    margin-bottom: 0.5rem;
+}
+
+.progressBar {
+    height: 8px;
+    background: var(--background);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.25rem;
+}
+
+.progressFill {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.progressText {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+}
+
+.campaignMeta {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+}
+
+.donorName {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.donorEmail {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+}
+
+.donorStats {
+    text-align: right;
+}
+
+.donorAmount {
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.25rem;
+}
+
+.donorCount {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+}
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    color: var(--muted-foreground);
+    font-size: 1.125rem;
+}
+
+@media (max-width: 768px) {
+    .page {
+        padding: 1rem;
+    }
+
+    .header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .statsGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .chartsRow,
+    .tablesRow {
+        grid-template-columns: 1fr;
+    }
+
+    .statCard .statValue {
+        font-size: 1.5rem;
+    }
+}

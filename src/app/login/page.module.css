@@ -1,0 +1,84 @@
+.loginPage {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+}
+
+.loginCard {
+    width: 100%;
+    max-width: 400px;
+    margin: 1rem;
+}
+
+.formGroup {
+    margin-bottom: 1.5rem;
+}
+
+.label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.error {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background-color: #fee2e2;
+    border-radius: var(--radius);
+}
+
+.success {
+    color: #059669;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background-color: #d1fae5;
+    border-radius: var(--radius);
+}
+
+.footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+}
+
+.signupLink {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.signupLink:hover {
+    text-decoration: underline;
+}
+
+.forgotLink {
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 0.875rem;
+}
+
+.forgotLink:hover {
+    text-decoration: underline;
+}

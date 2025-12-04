@@ -1,0 +1,168 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  DONOR
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum CampaignStatus {
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+}
+
+enum DonationStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+model User {
+  id                String         @id @default(cuid())
+  name              String?
+  email             String         @unique
+  password          String
+  role              Role           @default(DONOR)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  campaigns         Campaign[] // Campaigns created by this user (if admin)
+  donations         Donation[]     @relation("DonorDonations")
+  receivedDonations Donation[]     @relation("ReceivedDonations")
+  approvedDonations Donation[]     @relation("ApprovedDonations")
+  subscriptions     Subscription[]
+}
+
+model Branch {
+  id        String     @id @default(cuid())
+  name      String
+  location  String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  campaigns Campaign[]
+}
+
+model Campaign {
+  id            String            @id @default(cuid())
+  title         String
+  description   String
+  targetAmount  Float
+  currentAmount Float             @default(0)
+  currency      String            @default("NGN")
+  status        CampaignStatus    @default(ACTIVE)
+  startDate     DateTime?
+  endDate       DateTime?
+  categoryId    String?
+  category      CampaignCategory? @relation(fields: [categoryId], references: [id])
+  branchId      String?
+  branch        Branch?           @relation(fields: [branchId], references: [id])
+  creatorId     String
+  creator       User              @relation(fields: [creatorId], references: [id])
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @default(now())
+  donations     Donation[]
+  subscriptions Subscription[]
+}
+
+model Donation {
+  id               String         @id @default(cuid())
+  amount           Float
+  currency         String         @default("NGN")
+  donationType     DonationType   @default(ONLINE)
+  status           DonationStatus @default(PENDING)
+  paymentReference String?        @unique
+  receiptCode      String?        @unique @default(cuid())
+  donorId          String?
+  donor            User?          @relation("DonorDonations", fields: [donorId], references: [id])
+  campaignId       String
+  campaign         Campaign       @relation(fields: [campaignId], references: [id])
+
+  // Cash donation specific fields
+  receivedBy     String? // User ID of staff who recorded cash donation
+  receiver       User?           @relation("ReceivedDonations", fields: [receivedBy], references: [id])
+  approvalStatus ApprovalStatus? @default(PENDING)
+  approvedBy     String? // User ID of admin who approved
+  approver       User?           @relation("ApprovedDonations", fields: [approvedBy], references: [id])
+  approvedAt     DateTime?
+  flagReason     String? // Reason for flagging (if flagged)
+  notes          String? // Additional notes about the donation
+  isAnonymous    Boolean         @default(false)
+  subscriptionId String? // Link to subscription if this is a recurring donation
+  subscription   Subscription?   @relation("SubscriptionDonations", fields: [subscriptionId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum DonationType {
+  ONLINE
+  CASH
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  FLAGGED
+  REJECTED
+}
+
+model CampaignCategory {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  description String?
+  icon        String? // Emoji or icon name
+  color       String? // Hex color code for badge
+  campaigns   Campaign[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Subscription {
+  id              String               @id @default(cuid())
+  userId          String
+  user            User                 @relation(fields: [userId], references: [id])
+  campaignId      String?
+  campaign        Campaign?            @relation(fields: [campaignId], references: [id])
+  amount          Float
+  currency        String               @default("NGN")
+  interval        SubscriptionInterval @default(MONTHLY)
+  status          SubscriptionStatus   @default(ACTIVE)
+  startDate       DateTime             @default(now())
+  nextPaymentDate DateTime
+  lastPaymentDate DateTime?
+  paymentMethodId String? // Payment provider reference (e.g., Paystack authorization code)
+  provider        String               @default("PAYSTACK") // "PAYSTACK" or "STRIPE"
+  donations       Donation[]           @relation("SubscriptionDonations")
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAUSED
+  CANCELLED
+  FAILED
+}
+
+enum SubscriptionInterval {
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  YEARLY
+}
