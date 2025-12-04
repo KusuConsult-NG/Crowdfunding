@@ -143,7 +143,7 @@ export async function GET(request: NextRequest) {
         });
 
         const topDonors = await Promise.all(
-            donorStats.map(async (stat) => {
+            donorStats.map(async (stat: any) => {
                 const donor = await prisma.user.findUnique({
                     where: { id: stat.donorId! },
                     select: {
