@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
         });
 
         // Convert to CSV format
-        const csvData = donations.map((donation) => ({
+        const csvData = donations.map((donation: any) => ({
             'Date': format(donation.createdAt, 'yyyy-MM-dd HH:mm:ss'),
             'Donor Name': donation.donor?.name || 'Anonymous',
             'Donor Email': donation.donor?.email || 'N/A',
