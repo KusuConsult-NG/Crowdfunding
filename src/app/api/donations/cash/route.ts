@@ -50,7 +50,10 @@ export async function POST(request: NextRequest) {
 
         if (isDuplicate) {
             return NextResponse.json(
-                { error: 'Potential duplicate donation detected. Please wait a moment before recording again.' },
+                {
+                    warning: 'Potential duplicate detected',
+                    message: 'A similar donation was recorded in the last 24 hours. Please verify before proceeding.',
+                },
                 { status: 409 }
             );
         }
@@ -62,14 +65,13 @@ export async function POST(request: NextRequest) {
 
         if (!donor) {
             // Create a new user for the donor if they don't exist
-            // Generate a random password since they are created via admin entry
             const randomPassword = Math.random().toString(36).slice(-8);
 
             donor = await prisma.user.create({
                 data: {
                     name: donorName,
                     email: donorEmail,
-                    password: randomPassword, // In a real app, we'd handle this better
+                    password: randomPassword,
                     role: 'DONOR',
                 },
             });
@@ -93,52 +95,6 @@ export async function POST(request: NextRequest) {
                 notes,
                 isAnonymous: isAnonymous || false,
             },
-        });
-
-        if (isDuplicate) {
-            return NextResponse.json(
-                {
-                    warning: 'Potential duplicate detected',
-                    message: 'A similar donation was recorded in the last 24 hours. Please verify before proceeding.',
-                },
-                { status: 409 }
-            );
-        }
-
-        // Find or create donor user
-        let donor = await prisma.user.findUnique({
-            where: { email: donorEmail },
-        });
-
-        if (!donor) {
-            // Create donor user if not exists
-            donor = await prisma.user.create({
-                data: {
-                    email: donorEmail,
-                    name: donorName || 'Anonymous Donor',
-                    password: '', // No password for auto-created donors
-                    role: 'DONOR',
-                },
-            });
-        }
-
-        // Generate unique receipt code
-        const receiptCode = generateReceiptCode();
-
-        // Create cash donation
-        const donation = await prisma.donation.create({
-            data: {
-                amount: parseFloat(amount),
-                currency: campaign.currency,
-                donationType: 'CASH',
-                status: 'SUCCESS', // Cash is already received
-                receiptCode,
-                campaignId,
-                donorId: donor.id,
-                receivedBy: session.user!.id, // Staff who recorded this
-                approvalStatus: 'PENDING', // Requires admin approval
-                notes,
-            },
             include: {
                 donor: {
                     select: { name: true, email: true },
@@ -157,7 +113,7 @@ export async function POST(request: NextRequest) {
             donorName: donor.name || 'Valued Donor',
             donorEmail: donor.email,
             amount: parseFloat(amount),
-            currency: campaign.currency,
+            currency: 'NGN',
             campaignTitle: campaign.title,
             campaignId: campaign.id,
             receiptCode,

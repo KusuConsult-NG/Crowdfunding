@@ -1,5 +1,12 @@
 import { jsPDF } from 'jspdf';
-import { formatCurrency } from './utils';
+
+// Helper to format currency
+const formatCurrency = (amount: number, currency: string) => {
+    return new Intl.NumberFormat('en-NG', {
+        style: 'currency',
+        currency: currency,
+    }).format(amount);
+};
 
 interface ReceiptData {
     receiptNumber: string;
