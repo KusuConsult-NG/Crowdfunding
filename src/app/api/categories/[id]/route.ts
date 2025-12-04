@@ -10,7 +10,7 @@ export async function PUT(
     try {
         const session = await auth();
 
-        if (!session || !session.user || (session.user.role !== 'ADMIN' && session.user.role !== 'SUPER_ADMIN')) {
+        if (!session || !session.user || ((session.user as any).role !== 'ADMIN' && (session.user as any).role !== 'SUPER_ADMIN')) {
             return NextResponse.json(
                 { error: 'Unauthorized' },
                 { status: 403 }
@@ -55,7 +55,7 @@ export async function DELETE(
     try {
         const session = await auth();
 
-        if (!session || !session.user || session.user.role !== 'SUPER_ADMIN') {
+        if (!session || !session.user || (session.user as any).role !== 'SUPER_ADMIN') {
             return NextResponse.json(
                 { error: 'Unauthorized. Only super admins can delete categories.' },
                 { status: 403 }

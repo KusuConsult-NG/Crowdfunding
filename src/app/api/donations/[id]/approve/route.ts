@@ -11,7 +11,7 @@ export async function PUT(
         const session = await auth();
 
         // Only super admins can approve
-        if (!session || !session.user || session.user.role !== 'SUPER_ADMIN') {
+        if (!session || !session.user || (session.user as any).role !== 'SUPER_ADMIN') {
             return NextResponse.json(
                 { error: 'Unauthorized. Only super administrators can approve donations.' },
                 { status: 403 }

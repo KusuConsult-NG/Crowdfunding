@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     try {
         const session = await auth();
 
-        if (!session || !session.user || (session.user.role !== 'ADMIN' && session.user.role !== 'SUPER_ADMIN')) {
+        if (!session || !session.user || ((session.user as any).role !== 'ADMIN' && (session.user as any).role !== 'SUPER_ADMIN')) {
             return NextResponse.json(
                 { error: 'Unauthorized. Only administrators can create categories.' },
                 { status: 403 }
