@@ -1,21 +1,49 @@
 :root {
-  --primary: #4F46E5;
+  /* Dynamic Violet-Blue Brand Colors */
+  --primary: #6366f1;
+  /* Indigo 500 */
+  --primary-hover: #4f46e5;
   /* Indigo 600 */
-  --primary-hover: #4338ca;
-  /* Indigo 700 */
-  --secondary: #06B6D4;
-  /* Cyan 500 */
-  --background: #ffffff;
+  --secondary: #ec4899;
+  /* Pink 500 */
+  --accent: #8b5cf6;
+  /* Violet 500 */
+
+  /* Modern Neutral Scale */
+  --background: #f8fafc;
+  /* Slate 50 - Softer white */
   --foreground: #0f172a;
   /* Slate 900 */
+  --card-bg: #ffffff;
   --muted: #f1f5f9;
-  /* Slate 100 */
   --muted-foreground: #64748b;
-  /* Slate 500 */
   --border: #e2e8f0;
-  /* Slate 200 */
-  --radius: 0.5rem;
-  --font-sans: 'Inter', sans-serif;
+
+  /* Spacing & Radius */
+  --radius: 0.75rem;
+  /* Softer, rounder corners */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-colored: 0 10px 15px -3px rgba(99, 102, 241, 0.2);
+}
+
+/* Glassmorphism Utility */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 

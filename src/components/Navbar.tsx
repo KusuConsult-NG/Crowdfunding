@@ -6,17 +6,15 @@ export default async function Navbar() {
     const session = await auth();
 
     return (
-        <nav style={{
-            borderBottom: '1px solid #e5e7eb',
-            padding: '1rem 0',
-            backgroundColor: 'white',
+        <nav className="glass" style={{
             position: 'sticky',
             top: 0,
-            zIndex: 50
+            zIndex: 50,
+            borderBottom: 'none' // handled by glass class
         }}>
-            <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Link href="/" style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--primary)', textDecoration: 'none' }}>
-                    ChurchFlow
+            <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '4rem' }}>
+                <Link href="/" style={{ fontSize: '1.25rem', fontWeight: 800, textDecoration: 'none' }}>
+                    <span className="gradient-text">ChurchFlow</span>
                 </Link>
 
                 <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>

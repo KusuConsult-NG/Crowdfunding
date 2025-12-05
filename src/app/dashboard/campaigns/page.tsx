@@ -9,7 +9,8 @@ export const dynamic = 'force-dynamic';
 export default async function DashboardCampaignsPage() {
     const session = await auth();
 
-    let campaigns = [];
+
+    let campaigns: any[] = [];
     try {
         if (session?.user?.email) {
             // Fetch campaigns created by this user
