@@ -14,6 +14,7 @@ export default function SignupPage() {
         email: '',
         password: '',
         confirmPassword: '',
+        role: 'DONOR', // Default role
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -22,7 +23,6 @@ export default function SignupPage() {
         e.preventDefault();
         setError('');
 
-        // Validate passwords match
         if (formData.password !== formData.confirmPassword) {
             setError('Passwords do not match');
             return;
@@ -33,13 +33,12 @@ export default function SignupPage() {
         try {
             const response = await fetch('/api/auth/signup', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     name: formData.name,
                     email: formData.email,
                     password: formData.password,
+                    role: formData.role,
                 }),
             });
 
@@ -49,7 +48,6 @@ export default function SignupPage() {
                 throw new Error(data.error || 'Failed to create account');
             }
 
-            // Redirect to login page
             router.push('/login?registered=true');
         } catch (err: any) {
             setError(err.message);
@@ -58,7 +56,7 @@ export default function SignupPage() {
         }
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value,
@@ -75,9 +73,7 @@ export default function SignupPage() {
                 <CardContent>
                     <form onSubmit={handleSubmit}>
                         <div className={styles.formGroup}>
-                            <label className={styles.label} htmlFor="name">
-                                Full Name
-                            </label>
+                            <label className={styles.label} htmlFor="name">Full Name</label>
                             <input
                                 type="text"
                                 id="name"
@@ -91,9 +87,7 @@ export default function SignupPage() {
                         </div>
 
                         <div className={styles.formGroup}>
-                            <label className={styles.label} htmlFor="email">
-                                Email Address
-                            </label>
+                            <label className={styles.label} htmlFor="email">Email Address</label>
                             <input
                                 type="email"
                                 id="email"
@@ -107,9 +101,7 @@ export default function SignupPage() {
                         </div>
 
                         <div className={styles.formGroup}>
-                            <label className={styles.label} htmlFor="password">
-                                Password
-                            </label>
+                            <label className={styles.label} htmlFor="password">Password</label>
                             <input
                                 type="password"
                                 id="password"
@@ -124,9 +116,7 @@ export default function SignupPage() {
                         </div>
 
                         <div className={styles.formGroup}>
-                            <label className={styles.label} htmlFor="confirmPassword">
-                                Confirm Password
-                            </label>
+                            <label className={styles.label} htmlFor="confirmPassword">Confirm Password</label>
                             <input
                                 type="password"
                                 id="confirmPassword"
@@ -138,6 +128,21 @@ export default function SignupPage() {
                                 required
                                 minLength={6}
                             />
+                        </div>
+
+                        <div className={styles.formGroup}>
+                            <label className={styles.label} htmlFor="role">I want to:</label>
+                            <select
+                                id="role"
+                                name="role"
+                                className={styles.input}
+                                value={formData.role}
+                                onChange={handleChange}
+                                style={{ backgroundColor: 'white' }}
+                            >
+                                <option value="DONOR">Make Donations</option>
+                                <option value="ADMIN">Create Campaigns (Organizer)</option>
+                            </select>
                         </div>
 
                         {error && <div className={styles.error}>{error}</div>}
