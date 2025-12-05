@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
 import styles from '../../login/page.module.css';
@@ -15,7 +16,7 @@ export default function AdminSignupPage() {
         email: '',
         password: '',
         confirmPassword: '',
-        title: 'Church Secretary', // Default title
+        title: '', // Default title
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -43,6 +44,7 @@ export default function AdminSignupPage() {
         setLoading(true);
 
         try {
+            // Create account
             const response = await fetch('/api/auth/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -61,10 +63,22 @@ export default function AdminSignupPage() {
                 throw new Error(data.error || 'Failed to create account');
             }
 
-            router.push('/login?registered=true');
+            // Auto-login after successful signup
+            const result = await signIn('credentials', {
+                email: formData.email,
+                password: formData.password,
+                redirect: false,
+            });
+
+            if (result?.error) {
+                setError('Account created but login failed. Please try logging in manually.');
+                setTimeout(() => router.push('/login'), 2000);
+            } else {
+                // Redirect to dashboard
+                router.push('/dashboard');
+            }
         } catch (err: any) {
             setError(err.message);
-        } finally {
             setLoading(false);
         }
     };
