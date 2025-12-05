@@ -1,0 +1,4 @@
+# Ignore middleware files
+**/middleware.ts
+**/middleware.js
+.next/
