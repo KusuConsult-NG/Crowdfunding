@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import styles from './page.module.css';
@@ -27,6 +28,10 @@ function formatCurrency(amount: number, currency: string = 'NGN') {
 }
 
 export default function DashboardPage() {
+    const { data: session } = useSession();
+    const userRole = (session?.user as any)?.role || 'DONOR';
+    const isAdmin = userRole === 'ADMIN' || userRole === 'SUPER_ADMIN';
+
     const [campaigns, setCampaigns] = useState<Campaign[]>([]);
     const [stats, setStats] = useState({
         totalCampaigns: 0,
@@ -49,22 +54,23 @@ export default function DashboardPage() {
                 setCampaigns(data);
 
                 // Calculate stats
+                const totalCampaigns = data.length;
+                const activeCampaigns = data.filter((c: Campaign) => c.status === 'ACTIVE').length;
                 const totalRaised = data.reduce((sum: number, c: Campaign) => sum + c.currentAmount, 0);
                 const totalDonations = data.reduce((sum: number, c: Campaign) => sum + c._count.donations, 0);
-                const activeCampaigns = data.filter((c: Campaign) => c.status === 'ACTIVE').length;
 
                 setStats({
-                    totalCampaigns: data.length,
+                    totalCampaigns,
                     activeCampaigns,
                     totalRaised,
                     totalDonations,
                 });
             } else {
                 console.error('Invalid campaigns data:', data);
-                setCampaigns([]);
+                // setCampaigns([]); // Removed as per instruction, but might be good to keep for robustness
             }
         } catch (error) {
-            console.error('Error fetching campaigns:', error);
+            console.error('Failed to fetch campaigns:', error);
             setCampaigns([]);
         } finally {
             setLoading(false);
@@ -79,9 +85,11 @@ export default function DashboardPage() {
         <>
             <div className={styles.header}>
                 <h1 className={styles.title}>Dashboard</h1>
-                <Link href="/dashboard/campaigns/new">
-                    <Button>Create Campaign</Button>
-                </Link>
+                {isAdmin && (
+                    <Link href="/dashboard/campaigns/new">
+                        <Button>Create Campaign</Button>
+                    </Link>
+                )}
             </div>
 
             <div className={styles.statsGrid}>
