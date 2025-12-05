@@ -8,6 +8,8 @@ import { DonateButton } from '@/components/DonateButton';
 import { prisma } from '@/lib/prisma';
 import styles from './page.module.css';
 
+export const dynamic = 'force-dynamic';
+
 function formatCurrency(amount: number, currency: string = 'NGN') {
     return new Intl.NumberFormat('en-NG', {
         style: 'currency',
