@@ -1,28 +1,30 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialize Resend safely - checks for key to prevent build errors
+const resendApiKey = process.env.RESEND_API_KEY || 're_123456789'; // Fallback for build time
+const resend = new Resend(resendApiKey);
 
 export async function sendPasswordResetEmail(email: string, token: string) {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    const resetUrl = `${appUrl}/reset-password/${token}`;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const resetUrl = `${appUrl}/reset-password/${token}`;
 
-    try {
-        const result = await resend.emails.send({
-            from: process.env.FROM_EMAIL || 'ChurchFlow <onboarding@resend.dev>',
-            to: email,
-            subject: 'Reset Your ChurchFlow Password',
-            html: generatePasswordResetHTML(resetUrl),
-        });
+  try {
+    const result = await resend.emails.send({
+      from: process.env.FROM_EMAIL || 'ChurchFlow <onboarding@resend.dev>',
+      to: email,
+      subject: 'Reset Your ChurchFlow Password',
+      html: generatePasswordResetHTML(resetUrl),
+    });
 
-        return { success: true, messageId: result.data?.id };
-    } catch (error) {
-        console.error('Failed to send password reset email:', error);
-        return { success: false, error };
-    }
+    return { success: true, messageId: result.data?.id };
+  } catch (error) {
+    console.error('Failed to send password reset email:', error);
+    return { success: false, error };
+  }
 }
 
 function generatePasswordResetHTML(resetUrl: string): string {
-    return `
+  return `
     <!DOCTYPE html>
     <html>
       <head>
