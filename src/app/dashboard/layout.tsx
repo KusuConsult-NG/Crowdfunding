@@ -74,28 +74,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                                 fontWeight: 'bold',
                                 fontSize: '1rem',
                                 textAlign: 'center',
-                                marginBottom: '0.5rem'
+                                marginBottom: '0.5rem',
+                                color: '#1f2937'
                             }}>
                                 {user.name || 'User'}
                             </div>
-
-                            {/* User ID */}
-                            {user.id && (
-                                <div style={{
-                                    fontSize: '0.8rem',
-                                    opacity: 0.9,
-                                    textAlign: 'center',
-                                    marginBottom: '0.5rem',
-                                    fontFamily: 'monospace',
-                                    background: 'rgba(0,0,0,0.2)',
-                                    padding: '0.25rem 0.5rem',
-                                    borderRadius: '0.25rem',
-                                    display: 'inline-block',
-                                    width: '100%'
-                                }}>
-                                    ID: {user.id.slice(0, 12)}...
-                                </div>
-                            )}
 
                             {/* Role Badge */}
                             <div style={{
@@ -108,7 +91,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                                 fontWeight: 600,
                                 textAlign: 'center',
                                 textTransform: 'uppercase',
-                                letterSpacing: '0.05em'
+                                letterSpacing: '0.05em',
+                                color: 'white'
                             }}>
                                 {role}
                             </div>
