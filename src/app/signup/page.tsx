@@ -13,7 +13,7 @@ export default function SignupSelectionPage() {
                     <h1 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1rem', color: '#1f2937' }}>
                         Join ChurchFlow
                     </h1>
-                    <p style={{ fontSize: '1.25rem', color: '#6b7280' }}>
+                    <p style={{ fontSize: '1.25rem', color: '#4b5563', fontWeight: 500 }}>
                         Choose how you want to contribute to the community
                     </p>
                 </div>
@@ -38,11 +38,11 @@ export default function SignupSelectionPage() {
                         <Card className="campaignCard" style={{ height: '100%', transition: 'all 0.3s ease' }}>
                             <CardContent style={{ padding: '2.5rem', textAlign: 'center', display: 'flex', flexDirection: 'column', height: '100%' }}>
                                 <div style={{ fontSize: '3rem', marginBottom: '1.5rem' }}>🚀</div>
-                                <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem', color: '#1f2937' }}>As an Organizer</h2>
+                                <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem', color: '#1f2937' }}>As an Admin</h2>
                                 <p style={{ color: '#6b7280', marginBottom: '2rem', flex: 1 }}>
-                                    I want to create campaigns, manage funds, and post updates for my project.
+                                    I want to create campaigns, manage funds and post update about my church/agency/group.
                                 </p>
-                                <Button fullWidth variant="outline" size="large">Join as Organizer</Button>
+                                <Button fullWidth variant="outline" size="large">Join as an Admin</Button>
                             </CardContent>
                         </Card>
                     </Link>

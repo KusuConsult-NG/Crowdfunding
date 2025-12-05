@@ -71,7 +71,7 @@ export default function AdminSignupPage() {
                             &larr; Back to selection
                         </Link>
                     </div>
-                    <CardTitle>Sign up as Organizer</CardTitle>
+                    <CardTitle>Sign up as Admin</CardTitle>
                     <CardDescription>Create an account to manage campaigns</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -137,7 +137,7 @@ export default function AdminSignupPage() {
                         {error && <div className={styles.error}>{error}</div>}
 
                         <Button type="submit" fullWidth disabled={loading}>
-                            {loading ? 'Creating Account...' : 'Create Organizer Account'}
+                            {loading ? 'Creating Account...' : 'Create Admin Account'}
                         </Button>
                     </form>
 
