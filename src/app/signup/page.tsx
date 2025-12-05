@@ -10,7 +10,7 @@ export default function SignupSelectionPage() {
         <div className={styles.loginPage}>
             <div style={{ maxWidth: '800px', width: '100%', padding: '0 1rem' }}>
                 <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-                    <h1 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1rem', color: '#ffffff' }}>
+                    <h1 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1rem', color: '#1f2937' }}>
                         Join ChurchFlow
                     </h1>
                     <p style={{ fontSize: '1.25rem', color: '#ffffff', fontWeight: 500 }}>
@@ -48,9 +48,9 @@ export default function SignupSelectionPage() {
                     </Link>
                 </div>
 
-                <div style={{ textAlign: 'center', marginTop: '3rem', color: 'rgba(255,255,255,0.9)' }}>
+                <div style={{ textAlign: 'center', marginTop: '3rem' }}>
                     Already have an account?{' '}
-                    <Link href="/login" style={{ color: '#ffffff', fontWeight: 600, textDecoration: 'underline' }}>
+                    <Link href="/login" style={{ color: 'var(--primary)', fontWeight: 600 }}>
                         Sign in
                     </Link>
                 </div>
