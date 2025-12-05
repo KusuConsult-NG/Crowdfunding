@@ -1,165 +1,60 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
+import { Card, CardContent } from '@/components/ui/Card';
 import styles from '../login/page.module.css';
 
-export default function SignupPage() {
-    const router = useRouter();
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        role: 'DONOR', // Default role
-    });
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError('');
-
-        if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match');
-            return;
-        }
-
-        setLoading(true);
-
-        try {
-            const response = await fetch('/api/auth/signup', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: formData.name,
-                    email: formData.email,
-                    password: formData.password,
-                    role: formData.role,
-                }),
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.error || 'Failed to create account');
-            }
-
-            router.push('/login?registered=true');
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
-    };
-
+export default function SignupSelectionPage() {
     return (
         <div className={styles.loginPage}>
-            <Card className={styles.loginCard}>
-                <CardHeader>
-                    <CardTitle>Create Account</CardTitle>
-                    <CardDescription>Sign up for ChurchFlow</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit}>
-                        <div className={styles.formGroup}>
-                            <label className={styles.label} htmlFor="name">Full Name</label>
-                            <input
-                                type="text"
-                                id="name"
-                                name="name"
-                                className={styles.input}
-                                placeholder="John Doe"
-                                value={formData.name}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
+            <div style={{ maxWidth: '800px', width: '100%', padding: '0 1rem' }}>
+                <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+                    <h1 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1rem', color: '#1f2937' }}>
+                        Join ChurchFlow
+                    </h1>
+                    <p style={{ fontSize: '1.25rem', color: '#6b7280' }}>
+                        Choose how you want to contribute to the community
+                    </p>
+                </div>
 
-                        <div className={styles.formGroup}>
-                            <label className={styles.label} htmlFor="email">Email Address</label>
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                className={styles.input}
-                                placeholder="your@email.com"
-                                value={formData.email}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+                    {/* Donor Option */}
+                    <Link href="/signup/donor" style={{ textDecoration: 'none' }}>
+                        <Card className="campaignCard" style={{ height: '100%', transition: 'all 0.3s ease' }}>
+                            <CardContent style={{ padding: '2.5rem', textAlign: 'center', display: 'flex', flexDirection: 'column', height: '100%' }}>
+                                <div style={{ fontSize: '3rem', marginBottom: '1.5rem' }}>❤️</div>
+                                <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem', color: '#1f2937' }}>As a Donor</h2>
+                                <p style={{ color: '#6b7280', marginBottom: '2rem', flex: 1 }}>
+                                    I want to support campaigns, make donations, and track my giving history.
+                                </p>
+                                <Button fullWidth size="large">Join as Donor</Button>
+                            </CardContent>
+                        </Card>
+                    </Link>
 
-                        <div className={styles.formGroup}>
-                            <label className={styles.label} htmlFor="password">Password</label>
-                            <input
-                                type="password"
-                                id="password"
-                                name="password"
-                                className={styles.input}
-                                placeholder="••••••••"
-                                value={formData.password}
-                                onChange={handleChange}
-                                required
-                                minLength={6}
-                            />
-                        </div>
+                    {/* Admin/Organizer Option */}
+                    <Link href="/signup/admin" style={{ textDecoration: 'none' }}>
+                        <Card className="campaignCard" style={{ height: '100%', transition: 'all 0.3s ease' }}>
+                            <CardContent style={{ padding: '2.5rem', textAlign: 'center', display: 'flex', flexDirection: 'column', height: '100%' }}>
+                                <div style={{ fontSize: '3rem', marginBottom: '1.5rem' }}>🚀</div>
+                                <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem', color: '#1f2937' }}>As an Organizer</h2>
+                                <p style={{ color: '#6b7280', marginBottom: '2rem', flex: 1 }}>
+                                    I want to create campaigns, manage funds, and post updates for my project.
+                                </p>
+                                <Button fullWidth variant="outline" size="large">Join as Organizer</Button>
+                            </CardContent>
+                        </Card>
+                    </Link>
+                </div>
 
-                        <div className={styles.formGroup}>
-                            <label className={styles.label} htmlFor="confirmPassword">Confirm Password</label>
-                            <input
-                                type="password"
-                                id="confirmPassword"
-                                name="confirmPassword"
-                                className={styles.input}
-                                placeholder="••••••••"
-                                value={formData.confirmPassword}
-                                onChange={handleChange}
-                                required
-                                minLength={6}
-                            />
-                        </div>
-
-                        <div className={styles.formGroup}>
-                            <label className={styles.label} htmlFor="role">I want to:</label>
-                            <select
-                                id="role"
-                                name="role"
-                                className={styles.input}
-                                value={formData.role}
-                                onChange={handleChange}
-                                style={{ backgroundColor: 'white' }}
-                            >
-                                <option value="DONOR">Make Donations</option>
-                                <option value="ADMIN">Create Campaigns (Organizer)</option>
-                            </select>
-                        </div>
-
-                        {error && <div className={styles.error}>{error}</div>}
-
-                        <Button type="submit" fullWidth disabled={loading}>
-                            {loading ? 'Creating Account...' : 'Sign Up'}
-                        </Button>
-                    </form>
-
-                    <div className={styles.footer}>
-                        Already have an account?{' '}
-                        <Link href="/login" className={styles.signupLink}>
-                            Sign in
-                        </Link>
-                    </div>
-                </CardContent>
-            </Card>
+                <div style={{ textAlign: 'center', marginTop: '3rem' }}>
+                    Already have an account?{' '}
+                    <Link href="/login" style={{ color: 'var(--primary)', fontWeight: 600 }}>
+                        Sign in
+                    </Link>
+                </div>
+            </div>
         </div>
     );
 }
