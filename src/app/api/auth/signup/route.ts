@@ -8,6 +8,7 @@ const signupSchema = z.object({
     email: z.string().email('Invalid email address'),
     password: z.string().min(6, 'Password must be at least 6 characters'),
     role: z.enum(['DONOR', 'ADMIN']).optional(),
+    title: z.string().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const { name, email, password, role } = validation.data;
+        const { name, email, password, role, title } = validation.data;
 
         // Check if user already exists
         const existingUser = await prisma.user.findUnique({
@@ -47,12 +48,14 @@ export async function POST(request: NextRequest) {
                 email,
                 password: hashedPassword,
                 role: role || 'DONOR', // Default to DONOR if not specified
+                title: title || null,
             },
             select: {
                 id: true,
                 name: true,
                 email: true,
                 role: true,
+                title: true,
             },
         });
 

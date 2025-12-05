@@ -9,14 +9,26 @@ import styles from '../../login/page.module.css';
 
 export default function AdminSignupPage() {
     const router = useRouter();
+
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         password: '',
         confirmPassword: '',
+        title: 'Church Secretary', // Default title
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+
+    const positions = [
+        "General Secretary",
+        "DCC Secretary",
+        "LCC Secretary",
+        "Church Secretary",
+        "Agency Secretary",
+        "Group Secretary",
+        "Committee Secretary"
+    ];
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -37,7 +49,8 @@ export default function AdminSignupPage() {
                     name: formData.name,
                     email: formData.email,
                     password: formData.password,
-                    role: 'ADMIN', // Hardcoded role
+                    role: 'ADMIN',
+                    title: formData.title,
                 }),
             });
 
@@ -55,7 +68,7 @@ export default function AdminSignupPage() {
         }
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value,
@@ -76,6 +89,22 @@ export default function AdminSignupPage() {
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit}>
+                        <div className={styles.formGroup}>
+                            <label className={styles.label} htmlFor="title">Secretary Position</label>
+                            <select
+                                id="title"
+                                name="title"
+                                className={styles.input}
+                                value={formData.title}
+                                onChange={handleChange}
+                                style={{ backgroundColor: 'white' }}
+                            >
+                                {positions.map(pos => (
+                                    <option key={pos} value={pos}>{pos}</option>
+                                ))}
+                            </select>
+                        </div>
+
                         <div className={styles.formGroup}>
                             <label className={styles.label} htmlFor="name">Organization / Full Name</label>
                             <input
