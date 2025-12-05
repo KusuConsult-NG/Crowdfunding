@@ -38,9 +38,24 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // TODO: Verify payment with payment gateway
-        // For MVP, we'll simulate successful payment
-        const paymentStatus = status || 'SUCCESS';
+        // Verify payment with payment gateway
+        const { paystackService } = await import('@/lib/paystack');
+        let paymentStatus: 'SUCCESS' | 'FAILED' = 'FAILED';
+
+        try {
+            const verification = await paystackService.verifyPayment(reference);
+            if (verification.status && verification.data.status === 'success') {
+                // Verify amount matches (paystack returns kobo)
+                const expectedAmountKobo = Math.round(donation.amount * 100);
+                if (verification.data.amount >= expectedAmountKobo) {
+                    paymentStatus = 'SUCCESS';
+                } else {
+                    console.error('Payment amount mismatch', { expected: expectedAmountKobo, got: verification.data.amount });
+                }
+            }
+        } catch (err) {
+            console.error('Paystack verification failed:', err);
+        }
 
         // Update donation status
         const updatedDonation = await prisma.donation.update({

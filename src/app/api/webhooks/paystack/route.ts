@@ -61,7 +61,7 @@ async function handleChargeSuccess(data: any) {
 
     // Check if this is a subscription charge
     if (metadata?.subscriptionId) {
-        // Find subscription
+        // ... (subscription logic) ...
         const subscription = await prisma.subscription.findUnique({
             where: { id: metadata.subscriptionId },
             include: { campaign: true, user: true },
@@ -90,20 +90,12 @@ async function handleChargeSuccess(data: any) {
         if (subscription.campaignId) {
             await prisma.campaign.update({
                 where: { id: subscription.campaignId },
-                data: {
-                    currentAmount: {
-                        increment: amount / 100,
-                    },
-                },
+                data: { currentAmount: { increment: amount / 100 } },
             });
         }
 
-        // Update subscription - set last payment date and calculate next
-        const nextPaymentDate = calculateNextPaymentDate(
-            subscription.interval,
-            new Date()
-        );
-
+        // Update subscription dates
+        const nextPaymentDate = calculateNextPaymentDate(subscription.interval, new Date());
         await prisma.subscription.update({
             where: { id: subscription.id },
             data: {
@@ -114,6 +106,27 @@ async function handleChargeSuccess(data: any) {
         });
 
         console.log('Recurring donation created:', donation.id);
+
+    } else if (metadata?.donationId) {
+        // Handle One-Time Payment (standard donation)
+        const donation = await prisma.donation.findUnique({
+            where: { id: metadata.donationId },
+        });
+
+        if (donation && donation.status === 'PENDING') {
+            await prisma.donation.update({
+                where: { id: donation.id },
+                data: { status: 'SUCCESS' },
+            });
+
+            // Update campaign amount
+            await prisma.campaign.update({
+                where: { id: donation.campaignId },
+                data: { currentAmount: { increment: donation.amount } },
+            });
+
+            console.log('One-time donation verified via webhook:', donation.id);
+        }
     }
 }
 
