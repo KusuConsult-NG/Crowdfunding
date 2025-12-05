@@ -44,21 +44,28 @@ export default function DashboardPage() {
         try {
             const response = await fetch('/api/campaigns');
             const data = await response.json();
-            setCampaigns(data);
 
-            // Calculate stats
-            const totalRaised = data.reduce((sum: number, c: Campaign) => sum + c.currentAmount, 0);
-            const totalDonations = data.reduce((sum: number, c: Campaign) => sum + c._count.donations, 0);
-            const activeCampaigns = data.filter((c: Campaign) => c.status === 'ACTIVE').length;
+            if (Array.isArray(data)) {
+                setCampaigns(data);
 
-            setStats({
-                totalCampaigns: data.length,
-                activeCampaigns,
-                totalRaised,
-                totalDonations,
-            });
+                // Calculate stats
+                const totalRaised = data.reduce((sum: number, c: Campaign) => sum + c.currentAmount, 0);
+                const totalDonations = data.reduce((sum: number, c: Campaign) => sum + c._count.donations, 0);
+                const activeCampaigns = data.filter((c: Campaign) => c.status === 'ACTIVE').length;
+
+                setStats({
+                    totalCampaigns: data.length,
+                    activeCampaigns,
+                    totalRaised,
+                    totalDonations,
+                });
+            } else {
+                console.error('Invalid campaigns data:', data);
+                setCampaigns([]);
+            }
         } catch (error) {
             console.error('Error fetching campaigns:', error);
+            setCampaigns([]);
         } finally {
             setLoading(false);
         }
