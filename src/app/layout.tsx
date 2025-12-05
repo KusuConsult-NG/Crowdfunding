@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 };
 
 import Navbar from "@/components/Navbar";
+import AuthProvider from "@/components/SessionProvider";
 
 export default function RootLayout({
   children,
@@ -19,8 +20,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Navbar />
-        {children}
+        <AuthProvider>
+          <Navbar />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
