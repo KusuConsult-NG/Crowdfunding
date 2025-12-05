@@ -35,9 +35,15 @@ export default function ApprovalsPage() {
         try {
             const response = await fetch(`/api/donations/cash?status=${filter}`);
             const data = await response.json();
-            setDonations(data);
+            if (Array.isArray(data)) {
+                setDonations(data);
+            } else {
+                console.error("API Error:", data);
+                setDonations([]);
+            }
         } catch (err) {
             console.error('Error fetching donations:', err);
+            setDonations([]);
         } finally {
             setLoading(false);
         }
@@ -92,6 +98,16 @@ export default function ApprovalsPage() {
         } finally {
             setActionLoading(null);
         }
+    };
+
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString('en-NG', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
     };
 
     const getStatusBadge = (status: string) => {
@@ -180,15 +196,15 @@ export default function ApprovalsPage() {
                                         </div>
                                         <div className={styles.detailRow}>
                                             <span className={styles.detailLabel}>Donor:</span>
-                                            <span>{donation.donor.name} ({donation.donor.email})</span>
+                                            <span>{donation.donor?.name || 'Unknown'} ({donation.donor?.email})</span>
                                         </div>
                                         <div className={styles.detailRow}>
                                             <span className={styles.detailLabel}>Recorded by:</span>
-                                            <span>{donation.receiver.name}</span>
+                                            <span>{donation.receiver?.name || 'System'}</span>
                                         </div>
                                         <div className={styles.detailRow}>
                                             <span className={styles.detailLabel}>Date:</span>
-                                            <span>{new Date(donation.createdAt).toLocaleString()}</span>
+                                            <span>{formatDate(donation.createdAt)}</span>
                                         </div>
                                         {donation.notes && (
                                             <div className={styles.detailRow}>
