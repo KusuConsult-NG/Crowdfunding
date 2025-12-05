@@ -48,14 +48,14 @@ export async function POST(request: NextRequest) {
                 email,
                 password: hashedPassword,
                 role: role || 'DONOR', // Default to DONOR if not specified
-                // title: title || null, // Disabled due to persistent DB/Migration issues
+                title: title || null,
             },
             select: {
                 id: true,
                 name: true,
                 email: true,
                 role: true,
-                // title: true,
+                title: true,
             },
         });
 
