@@ -19,15 +19,20 @@ function formatCurrency(amount: number, currency: string = 'NGN') {
 }
 
 export default async function CampaignDetail({ params }: { params: { id: string } }) {
-    const campaign = await prisma.campaign.findUnique({
-        where: { id: params.id },
-        include: {
-            branch: true,
-            creator: {
-                select: { name: true, email: true },
+    let campaign = null;
+    try {
+        campaign = await prisma.campaign.findUnique({
+            where: { id: params.id },
+            include: {
+                branch: true,
+                creator: {
+                    select: { name: true, email: true },
+                },
             },
-        },
-    });
+        });
+    } catch (error) {
+        console.error('Failed to fetch campaign:', error);
+    }
 
     if (!campaign) {
         notFound();

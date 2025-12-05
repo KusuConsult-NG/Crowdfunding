@@ -16,12 +16,17 @@ function formatCurrency(amount: number, currency: string = 'NGN') {
 }
 
 export default async function Home() {
-  // Fetch active campaigns from database
-  const campaigns = await prisma.campaign.findMany({
-    where: { status: 'ACTIVE' },
-    take: 6,
-    orderBy: { createdAt: 'desc' },
-  });
+  let campaigns: any[] = [];
+  try {
+    campaigns = await prisma.campaign.findMany({
+      where: { status: 'ACTIVE' },
+      take: 6,
+      orderBy: { createdAt: 'desc' },
+    });
+  } catch (error) {
+    console.error('Failed to fetch campaigns:', error);
+    campaigns = [];
+  }
 
   return (
     <div>
