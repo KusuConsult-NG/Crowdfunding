@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import { format } from 'date-fns';
 
+export const dynamic = 'force-dynamic';
+
 // GET /api/exports/donations - Export donations to CSV
 export async function GET(request: NextRequest) {
     try {

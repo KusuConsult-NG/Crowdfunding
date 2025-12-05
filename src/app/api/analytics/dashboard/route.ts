@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import { subDays, startOfDay, endOfDay, format } from 'date-fns';
 
+export const dynamic = 'force-dynamic';
+
 // GET /api/analytics/dashboard - Get dashboard statistics
 export async function GET(request: NextRequest) {
     try {
