@@ -9,28 +9,57 @@ export const dynamic = 'force-dynamic';
 export default async function DashboardCampaignsPage() {
     const session = await auth();
 
-
+    // Get user role
+    let userRole = 'DONOR';
     let campaigns: any[] = [];
     try {
         if (session?.user?.email) {
-            // Fetch campaigns created by this user
+            // Fetch user with role
             const user = await prisma.user.findUnique({
                 where: { email: session.user.email },
-                select: { id: true }
+                select: { id: true, role: true }
             });
 
             if (user) {
-                campaigns = await prisma.campaign.findMany({
-                    where: { creatorId: user.id },
-                    orderBy: { createdAt: 'desc' },
-                    include: {
-                        _count: { select: { donations: true } }
-                    }
-                });
+                userRole = user.role;
+
+                // Only fetch campaigns if user is admin
+                if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') {
+                    campaigns = await prisma.campaign.findMany({
+                        where: { creatorId: user.id },
+                        orderBy: { createdAt: 'desc' },
+                        include: {
+                            _count: { select: { donations: true } }
+                        }
+                    });
+                }
             }
         }
     } catch (error) {
         console.error('Failed to fetch dashboard campaigns:', error);
+    }
+
+    // Redirect donors to browse campaigns
+    const isAdmin = userRole === 'ADMIN' || userRole === 'SUPER_ADMIN';
+
+    if (!isAdmin) {
+        return (
+            <div style={{ padding: '2rem' }}>
+                <Card>
+                    <CardContent style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+                        <p style={{ color: '#6b7280', marginBottom: '1rem', fontSize: '1.1rem' }}>
+                            Campaign management is only available for administrators.
+                        </p>
+                        <p style={{ color: '#6b7280', marginBottom: '2rem' }}>
+                            Browse active campaigns to make donations.
+                        </p>
+                        <Link href="/campaigns">
+                            <Button>Browse Campaigns</Button>
+                        </Link>
+                    </CardContent>
+                </Card>
+            </div>
+        );
     }
 
     return (

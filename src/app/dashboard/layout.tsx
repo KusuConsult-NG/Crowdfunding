@@ -12,9 +12,9 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
     const pathname = usePathname();
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
     const user = session?.user;
-    const role = (user as any)?.role || 'DONOR'; // Default to DONOR
+    const role = user?.role || 'DONOR'; // Default to DONOR
 
     const handleLogout = async () => {
         await signOut({ callbackUrl: '/login' });
@@ -23,7 +23,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     const navItems = [
         { href: '/dashboard', label: 'Dashboard', roles: ['ADMIN', 'DONOR', 'SUPER_ADMIN'] },
         { href: '/dashboard/campaigns', label: 'Manage Campaigns', roles: ['ADMIN', 'SUPER_ADMIN'] },
-        { href: '/', label: 'Browse Campaigns', roles: ['DONOR'] },
+        { href: '/campaigns', label: 'Browse Campaigns', roles: ['DONOR'] },
         { href: '/dashboard/donations/approvals', label: 'Donation Approvals', roles: ['ADMIN', 'SUPER_ADMIN'] },
         // { href: '/dashboard/donations/my', label: 'My Donations', roles: ['DONOR'] }, // TODO: Create this page
         { href: '/dashboard/subscriptions', label: 'Subscriptions', roles: ['ADMIN', 'DONOR', 'SUPER_ADMIN'] },
@@ -53,13 +53,23 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 </nav>
 
                 <div style={{ marginTop: 'auto', padding: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                    {user && (
+                    {status === 'loading' ? (
+                        <div style={{ marginBottom: '1rem', color: 'white', fontSize: '0.875rem' }}>
+                            Loading...
+                        </div>
+                    ) : user ? (
                         <div style={{ marginBottom: '1rem', color: 'white', fontSize: '0.875rem' }}>
                             <div style={{ fontWeight: 'bold' }}>{user.name || 'User'}</div>
-                            <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>ID: {user.id?.slice(0, 8)}...</div>
-                            <div style={{ fontSize: '0.75rem', opacity: 0.7, textTransform: 'capitalize' }}>{role.toLowerCase()}</div>
+                            {user.id && (
+                                <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>
+                                    ID: {user.id.slice(0, 8)}...
+                                </div>
+                            )}
+                            <div style={{ fontSize: '0.75rem', opacity: 0.7, textTransform: 'capitalize' }}>
+                                {role.toLowerCase()}
+                            </div>
                         </div>
-                    )}
+                    ) : null}
                     <Button variant="outline" fullWidth onClick={handleLogout}>
                         Logout
                     </Button>
