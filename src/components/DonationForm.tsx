@@ -62,22 +62,42 @@ export function DonationForm({ campaignId, currency }: DonationFormProps) {
                 return;
             }
 
-            // For Card payment, redirect to payment gateway or simulate
-            // In production, redirect to payment gateway here
-            // For MVP, we'll simulate payment verification
-            const verifyResponse = await fetch('/api/donations/verify', {
+            // For Card payment
+            // Check if we have a payment URL (real Paystack integration)
+            if (data.paymentUrl) {
+                // Redirect to Paystack payment page
+                window.location.href = data.paymentUrl;
+                return;
+            }
+
+            // Otherwise, simulate payment for testing (when Paystack is not configured)
+            // Create a simple test reference if one wasn't provided
+            const testReference = data.reference || data.paymentReference || `TEST-${Date.now()}`;
+
+            // Update donation to SUCCESS and update campaign amount
+            const updateResponse = await fetch(`/api/donations/${data.donation.id}/test-success`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    reference: data.paymentReference,
-                    status: 'SUCCESS', // Simulating successful payment
-                }),
             });
 
-            if (!verifyResponse.ok) {
-                throw new Error('Payment verification failed');
+            if (!updateResponse.ok) {
+                // Fallback: Try the verify endpoint
+                const verifyResponse = await fetch('/api/donations/verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        reference: testReference,
+                        status: 'SUCCESS',
+                    }),
+                });
+
+                if (!verifyResponse.ok) {
+                    throw new Error('Payment processing failed');
+                }
             }
 
             setSuccess(true);

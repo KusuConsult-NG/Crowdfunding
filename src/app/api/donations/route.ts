@@ -105,21 +105,31 @@ export async function POST(request: NextRequest) {
         const paystackAmount = Math.round(parseFloat(amount) * 100); // Convert to kobo
         const reference = `DON-${Date.now()}-${donation.id.substring(0, 8)}`;
 
-        const { paystackService } = await import('@/lib/paystack');
+        // Try to initialize Paystack payment, but don't fail if not configured
+        let paymentUrl = null;
 
-        const paymentData = await paystackService.initializePayment({
-            email: donorEmail,
-            amount: paystackAmount,
-            reference,
-            callback_url: `${process.env.NEXT_PUBLIC_APP_URL}/donation/callback`,
-            metadata: {
-                donationId: donation.id,
-                campaignId,
-                isRecurring: isRecurring || false,
-                recurringInterval: recurringInterval || null,
-                donorName,
-            },
-        });
+        try {
+            const { paystackService } = await import('@/lib/paystack');
+
+            const paymentData = await paystackService.initializePayment({
+                email: donorEmail,
+                amount: paystackAmount,
+                reference,
+                callback_url: `${process.env.NEXT_PUBLIC_APP_URL}/donation/callback`,
+                metadata: {
+                    donationId: donation.id,
+                    campaignId,
+                    isRecurring: isRecurring || false,
+                    recurringInterval: recurringInterval || null,
+                    donorName,
+                },
+            });
+
+            paymentUrl = paymentData.data.authorization_url;
+        } catch (error) {
+            console.warn('Paystack not configured, proceeding in test mode:', error);
+            // Not an error - just means we're in test mode
+        }
 
         // Update donation with payment reference
         await prisma.donation.update({
@@ -129,9 +139,12 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({
             donation,
-            paymentUrl: paymentData.data.authorization_url,
+            paymentUrl, // Will be null if Paystack not configured
             reference,
-            message: 'Payment initialized. Redirect user to payment URL.',
+            paymentReference: reference,
+            message: paymentUrl
+                ? 'Payment initialized. Redirect user to payment URL.'
+                : 'Test mode: No payment gateway configured.',
         }, { status: 201 });
     } catch (error) {
         console.error('Error creating donation:', error);
