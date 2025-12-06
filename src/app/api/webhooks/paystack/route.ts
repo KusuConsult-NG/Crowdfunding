@@ -1,52 +1,49 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 import crypto from 'crypto';
+import { prisma } from '@/lib/prisma';
 
-// Paystack webhook handler for subscription charges
 export async function POST(request: NextRequest) {
     try {
-        // Verify Paystack signature
-        const signature = request.headers.get('x-paystack-signature');
+        // Get the raw body for signature verification
         const body = await request.text();
+        const signature = request.headers.get('x-paystack-signature');
 
+        // Verify webhook signature
+        const secret = process.env.PAYSTACK_SECRET_KEY || '';
         const hash = crypto
-            .createHmac('sha512', process.env.PAYSTACK_SECRET_KEY!)
+            .createHmac('sha512', secret)
             .update(body)
             .digest('hex');
 
         if (hash !== signature) {
+            console.error('Invalid webhook signature');
             return NextResponse.json(
                 { error: 'Invalid signature' },
                 { status: 401 }
             );
         }
 
+        // Parse the body
         const event = JSON.parse(body);
 
-        // Handle different webhook events
+        console.log('Paystack webhook event:', event.event);
+
+        // Handle different event types
         switch (event.event) {
             case 'charge.success':
-                await handleChargeSuccess(event.data);
+                await handleSuccessfulCharge(event.data);
                 break;
 
-            case 'subscription.create':
-                await handleSubscriptionCreate(event.data);
-                break;
-
-            case 'subscription.disable':
-                await handleSubscriptionDisable(event.data);
-                break;
-
-            case 'subscription.not_renew':
-                await handleSubscriptionNotRenew(event.data);
+            case 'charge.failed':
+                await handleFailedCharge(event.data);
                 break;
 
             default:
-                console.log('Unhandled webhook event:', event.event);
+                console.log('Unhandled event type:', event.event);
         }
 
-        return NextResponse.json({ received: true });
-    } catch (error) {
+        return NextResponse.json({ received: true }, { status: 200 });
+    } catch (error: any) {
         console.error('Webhook error:', error);
         return NextResponse.json(
             { error: 'Webhook processing failed' },
@@ -55,141 +52,78 @@ export async function POST(request: NextRequest) {
     }
 }
 
-// Handle successful charge (including recurring charges)
-async function handleChargeSuccess(data: any) {
-    const { reference, amount, customer, authorization, metadata } = data;
+async function handleSuccessfulCharge(data: any) {
+    try {
+        const reference = data.reference;
 
-    // Check if this is a subscription charge
-    if (metadata?.subscriptionId) {
-        // ... (subscription logic) ...
-        const subscription = await prisma.subscription.findUnique({
-            where: { id: metadata.subscriptionId },
-            include: { campaign: true, user: true },
+        // Find the donation by payment reference
+        const donation = await prisma.donation.findFirst({
+            where: { paymentReference: reference },
+            include: { campaign: true },
         });
 
-        if (!subscription) {
-            console.error('Subscription not found:', metadata.subscriptionId);
+        if (!donation) {
+            console.error('Donation not found for reference:', reference);
             return;
         }
 
-        // Create donation record for this recurring charge
-        const donation = await prisma.donation.create({
+        // Update donation status
+        await prisma.donation.update({
+            where: { id: donation.id },
             data: {
-                amount: amount / 100, // Convert from kobo to naira
-                currency: 'NGN',
                 status: 'SUCCESS',
-                paymentReference: reference,
-                donorId: subscription.userId,
-                campaignId: subscription.campaignId!,
-                subscriptionId: subscription.id,
-                donationType: 'ONLINE',
             },
         });
 
-        // Update campaign amount
-        if (subscription.campaignId) {
-            await prisma.campaign.update({
-                where: { id: subscription.campaignId },
-                data: { currentAmount: { increment: amount / 100 } },
-            });
-        }
-
-        // Update subscription dates
-        const nextPaymentDate = calculateNextPaymentDate(subscription.interval, new Date());
-        await prisma.subscription.update({
-            where: { id: subscription.id },
+        // Update campaign's current amount
+        await prisma.campaign.update({
+            where: { id: donation.campaignId },
             data: {
-                lastPaymentDate: new Date(),
-                nextPaymentDate,
-                paymentMethodId: authorization.authorization_code,
+                currentAmount: {
+                    increment: donation.amount,
+                },
             },
         });
 
-        console.log('Recurring donation created:', donation.id);
+        console.log('Payment successful for donation:', donation.id);
 
-    } else if (metadata?.donationId) {
-        // Handle One-Time Payment (standard donation)
-        const donation = await prisma.donation.findUnique({
-            where: { id: metadata.donationId },
+        // TODO: Send confirmation email to donor
+        // TODO: Send notification to campaign creator
+
+    } catch (error) {
+        console.error('Error handling successful charge:', error);
+        throw error;
+    }
+}
+
+async function handleFailedCharge(data: any) {
+    try {
+        const reference = data.reference;
+
+        // Find the donation by payment reference
+        const donation = await prisma.donation.findFirst({
+            where: { paymentReference: reference },
         });
 
-        if (donation && donation.status === 'PENDING') {
-            await prisma.donation.update({
-                where: { id: donation.id },
-                data: { status: 'SUCCESS' },
-            });
-
-            // Update campaign amount
-            await prisma.campaign.update({
-                where: { id: donation.campaignId },
-                data: { currentAmount: { increment: donation.amount } },
-            });
-
-            console.log('One-time donation verified via webhook:', donation.id);
+        if (!donation) {
+            console.error('Donation not found for reference:', reference);
+            return;
         }
-    }
-}
 
-// Handle new subscription creation
-async function handleSubscriptionCreate(data: any) {
-    console.log('Subscription created:', data);
-    // Additional logic if needed
-}
-
-// Handle subscription disable
-async function handleSubscriptionDisable(data: any) {
-    const { subscription_code } = data;
-
-    // Find and update subscription status
-    const subscription = await prisma.subscription.findFirst({
-        where: { paymentMethodId: subscription_code },
-    });
-
-    if (subscription) {
-        await prisma.subscription.update({
-            where: { id: subscription.id },
-            data: { status: 'CANCELLED' },
+        // Update donation status to FAILED
+        await prisma.donation.update({
+            where: { id: donation.id },
+            data: {
+                status: 'FAILED',
+            },
         });
+
+        console.log('Payment failed for donation:', donation.id);
+
+        // TODO: Send failure notification to donor
+
+    } catch (error) {
+        console.error('Error handling failed charge:', error);
+        throw error;
     }
-}
-
-// Handle subscription not renewing
-async function handleSubscriptionNotRenew(data: any) {
-    const { subscription_code } = data;
-
-    const subscription = await prisma.subscription.findFirst({
-        where: { paymentMethodId: subscription_code },
-    });
-
-    if (subscription) {
-        await prisma.subscription.update({
-            where: { id: subscription.id },
-            data: { status: 'FAILED' },
-        });
-    }
-}
-
-// Helper function to calculate next payment date
-function calculateNextPaymentDate(
-    interval: string,
-    fromDate: Date = new Date()
-): Date {
-    const next = new Date(fromDate);
-
-    switch (interval) {
-        case 'WEEKLY':
-            next.setDate(next.getDate() + 7);
-            break;
-        case 'MONTHLY':
-            next.setMonth(next.getMonth() + 1);
-            break;
-        case 'QUARTERLY':
-            next.setMonth(next.getMonth() + 3);
-            break;
-        case 'YEARLY':
-            next.setFullYear(next.getFullYear() + 1);
-            break;
-    }
-
-    return next;
 }
