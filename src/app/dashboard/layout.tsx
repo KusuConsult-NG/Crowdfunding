@@ -17,7 +17,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     const role = user?.role || 'DONOR'; // Default to DONOR
 
     const handleLogout = async () => {
-        await signOut({ callbackUrl: '/login' });
+        await signOut({ callbackUrl: '/' });
     };
 
     const navItems = [

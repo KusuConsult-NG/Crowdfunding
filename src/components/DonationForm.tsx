@@ -17,6 +17,7 @@ export function DonationForm({ campaignId, currency }: DonationFormProps) {
         isAnonymous: false,
         isRecurring: false,
         recurringInterval: 'MONTHLY',
+        paymentMethod: 'CARD', // New field
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -43,6 +44,7 @@ export function DonationForm({ campaignId, currency }: DonationFormProps) {
                     donorName: formData.donorName,
                     donorEmail: formData.donorEmail,
                     isAnonymous: formData.isAnonymous,
+                    paymentMethod: formData.paymentMethod,
                 }),
             });
 
@@ -54,6 +56,13 @@ export function DonationForm({ campaignId, currency }: DonationFormProps) {
             const data = await response.json();
             setDonationId(data.donation.id);
 
+            // For Cash Transfer, show banking details and don't auto-verify
+            if (formData.paymentMethod === 'CASH_TRANSFER') {
+                setSuccess(true);
+                return;
+            }
+
+            // For Card payment, redirect to payment gateway or simulate
             // In production, redirect to payment gateway here
             // For MVP, we'll simulate payment verification
             const verifyResponse = await fetch('/api/donations/verify', {
@@ -79,6 +88,7 @@ export function DonationForm({ campaignId, currency }: DonationFormProps) {
                 isAnonymous: false,
                 isRecurring: false,
                 recurringInterval: 'MONTHLY',
+                paymentMethod: 'CARD',
             });
         } catch (err: any) {
             setError(err.message);
@@ -101,7 +111,46 @@ export function DonationForm({ campaignId, currency }: DonationFormProps) {
             <div className={styles.successMessage}>
                 <div className={styles.successIcon}>✓</div>
                 <h3>Thank You for Your Donation!</h3>
-                <p>Your contribution has been recorded successfully.</p>
+
+                {formData.paymentMethod === 'CASH_TRANSFER' ? (
+                    <>
+                        <p>Please complete your donation by transferring to the account below:</p>
+
+                        <div style={{
+                            background: '#f3f4f6',
+                            padding: '1.5rem',
+                            borderRadius: '0.5rem',
+                            margin: '1rem 0',
+                            textAlign: 'left'
+                        }}>
+                            <h4 style={{ marginBottom: '1rem', color: 'var(--primary)' }}>
+                                Bank Transfer Details
+                            </h4>
+                            <div style={{ marginBottom: '0.5rem' }}>
+                                <strong>Bank Name:</strong> Example Bank
+                            </div>
+                            <div style={{ marginBottom: '0.5rem' }}>
+                                <strong>Account Name:</strong> ChurchFlow Crowdfunding
+                            </div>
+                            <div style={{ marginBottom: '0.5rem' }}>
+                                <strong>Account Number:</strong> 0123456789
+                            </div>
+                            <div style={{ marginBottom: '0.5rem' }}>
+                                <strong>Amount:</strong> {currency} {Number(formData.amount).toLocaleString()}
+                            </div>
+                            <div style={{ marginBottom: '0.5rem' }}>
+                                <strong>Reference:</strong> DON-{donationId.slice(0, 8).toUpperCase()}
+                            </div>
+                        </div>
+
+                        <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '1rem' }}>
+                            Please use the reference code above when making your transfer.
+                            Your donation will be confirmed once payment is received.
+                        </p>
+                    </>
+                ) : (
+                    <p>Your contribution has been recorded successfully.</p>
+                )}
 
                 <div className={styles.successActions}>
                     <a
@@ -174,6 +223,28 @@ export function DonationForm({ campaignId, currency }: DonationFormProps) {
                     onChange={handleChange}
                     required
                 />
+            </div>
+
+            <div className={styles.formGroup}>
+                <label className={styles.label} htmlFor="paymentMethod">
+                    Payment Method
+                </label>
+                <select
+                    id="paymentMethod"
+                    name="paymentMethod"
+                    className={styles.input}
+                    value={formData.paymentMethod}
+                    onChange={handleChange}
+                    required
+                >
+                    <option value="CARD">💳 Card Payment (Paystack/Flutterwave)</option>
+                    <option value="CASH_TRANSFER">🏦 Bank Transfer</option>
+                </select>
+                {formData.paymentMethod === 'CASH_TRANSFER' && (
+                    <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>
+                        You will receive bank account details after submitting the form.
+                    </p>
+                )}
             </div>
 
             <div className={styles.formGroup}>
