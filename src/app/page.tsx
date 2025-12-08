@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
+import { ExpandableText } from '@/components/ExpandableText';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/Card';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { prisma } from '@/lib/prisma';
@@ -70,7 +71,9 @@ export default async function Home() {
                   <Link href={`/campaigns/${campaign.id}`} key={campaign.id} className={styles.campaignCard}>
                     <div className={styles.campaignCardContent}>
                       <h3 className={styles.cardTitle}>{campaign.title}</h3>
-                      <p className={styles.cardDescription}>{campaign.description}</p>
+                      <div className={styles.cardDescription}>
+                        <ExpandableText text={campaign.description} maxLines={5} />
+                      </div>
 
                       <div className={styles.progressSection}>
                         <div className={styles.progressBar}>

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/Card';
 import { ProgressBar } from '@/components/ui/ProgressBar';
+import { ExpandableText } from '@/components/ExpandableText';
 import { prisma } from '@/lib/prisma';
 import styles from '../page.module.css'; // Reusing home page styles for consistency
 
@@ -48,7 +49,9 @@ export default async function CampaignsPage() {
                         <Card key={campaign.id} className={styles.campaignCard}>
                             <CardHeader>
                                 <CardTitle>{campaign.title}</CardTitle>
-                                <CardDescription>{campaign.description}</CardDescription>
+                                <CardDescription>
+                                    <ExpandableText text={campaign.description} maxLines={5} />
+                                </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <div className={styles.progressSection}>
