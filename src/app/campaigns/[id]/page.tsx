@@ -53,7 +53,7 @@ export default async function CampaignDetail({ params }: { params: { id: string 
                         <div className={styles.campaignHeader}>
                             <h1 className={styles.campaignTitle}>{campaign.title}</h1>
                             <div className={styles.campaignDescription}>
-                                <ExpandableText text={campaign.description} maxLength={250} />
+                                <ExpandableText text={campaign.description} maxLines={5} />
                             </div>
                         </div>
 
