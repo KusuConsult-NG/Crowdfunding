@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { DonationForm } from '@/components/DonationForm';
 import { DonateButton } from '@/components/DonateButton';
+import { ExpandableText } from '@/components/ExpandableText';
 import { prisma } from '@/lib/prisma';
 import styles from './page.module.css';
 
@@ -51,7 +52,9 @@ export default async function CampaignDetail({ params }: { params: { id: string 
                     <div>
                         <div className={styles.campaignHeader}>
                             <h1 className={styles.campaignTitle}>{campaign.title}</h1>
-                            <p className={styles.campaignDescription}>{campaign.description}</p>
+                            <div className={styles.campaignDescription}>
+                                <ExpandableText text={campaign.description} maxLength={250} />
+                            </div>
                         </div>
 
                         <Card>
