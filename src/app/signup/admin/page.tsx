@@ -172,6 +172,9 @@ export default function AdminSignupPage() {
                                     )}
                                 </button>
                             </div>
+                            <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>
+                                Must be at least 8 characters with letters, numbers, and special characters (@$!%*#?&)
+                            </p>
                         </div>
 
                         <div className={styles.formGroup}>
