@@ -47,7 +47,7 @@ export default function DashboardPage() {
 
     const fetchCampaigns = async () => {
         try {
-            const response = await fetch('/api/campaigns');
+            const response = await fetch('/api/campaigns?scope=dashboard');
             const data = await response.json();
 
             if (Array.isArray(data)) {

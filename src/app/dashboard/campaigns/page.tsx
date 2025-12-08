@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
+import { CopyLinkButton } from '@/components/CopyLinkButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -89,8 +90,9 @@ export default async function DashboardCampaignsPage() {
                                     <Link href={`/campaigns/${campaign.id}`} style={{ fontWeight: 600, fontSize: '1.1rem', color: 'var(--primary)' }}>
                                         {campaign.title}
                                     </Link>
-                                    <div style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.25rem' }}>
+                                    <div style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.25rem', display: 'flex', alignItems: 'center' }}>
                                         {campaign.status} • {campaign._count.donations} donations
+                                        <CopyLinkButton campaignId={campaign.id} />
                                     </div>
                                 </div>
                                 <div style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>

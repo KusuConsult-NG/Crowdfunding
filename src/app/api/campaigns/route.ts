@@ -8,10 +8,36 @@ export async function GET(request: NextRequest) {
         const { searchParams } = new URL(request.url);
         const status = searchParams.get('status');
         const branchId = searchParams.get('branchId');
+        const scope = searchParams.get('scope'); // 'dashboard' or undefined
 
         const where: any = {};
         if (status) where.status = status;
         if (branchId) where.branchId = branchId;
+
+        // RBAC logic for dashboard scope
+        if (scope === 'dashboard') {
+            const session = await auth();
+            if (!session?.user) {
+                return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+            }
+
+            // Get user role
+            const user = await prisma.user.findUnique({
+                where: { email: session.user.email! },
+                select: { id: true, role: true }
+            });
+
+            if (user?.role === 'ADMIN') {
+                where.creatorId = user.id; // Restrict to own campaigns
+            }
+            // SUPER_ADMIN sees all (no extra filter needed)
+            // DONOR should not be calling this with scope=dashboard usually, but if they do, they see empty or public depending on logic. 
+            // Currently dashboard main page shows stats. Donors see global stats? 
+            // The prompt says "Donor Account Should See ALL PROJECTS". 
+            // Dashboard stats for donors usually imply global impact. 
+            // Admin stats imply "My Impact". 
+            // Let's refine: If ADMIN, restrict. If SUPER_ADMIN or DONOR, usually see all (or public ones).
+        }
 
         const campaigns = await prisma.campaign.findMany({
             where,

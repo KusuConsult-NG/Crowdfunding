@@ -50,20 +50,8 @@ export default function DonorSignupPage() {
                 throw new Error(data.error || 'Failed to create account');
             }
 
-            // Auto-login after successful signup
-            const result = await signIn('credentials', {
-                email: formData.email,
-                password: formData.password,
-                redirect: false,
-            });
-
-            if (result?.error) {
-                setError('Account created but login failed. Please try logging in manually.');
-                setTimeout(() => router.push('/login'), 2000);
-            } else {
-                // Redirect to dashboard
-                router.push('/dashboard');
-            }
+            // Redirect to login page with success flag
+            router.push('/login?registered=true');
         } catch (err: any) {
             setError(err.message);
             setLoading(false);
