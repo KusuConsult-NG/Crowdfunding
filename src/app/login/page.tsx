@@ -42,7 +42,8 @@ function LoginForm() {
             if (result?.error) {
                 setError('Invalid email or password');
             } else {
-                router.push('/dashboard');
+                // Use full page redirect to ensure navbar refreshes with new session
+                window.location.href = '/dashboard';
             }
         } catch (err) {
             setError('An error occurred. Please try again.');
