@@ -23,6 +23,7 @@ export default function AdminSignupPage() {
     const [showPassword, setShowPassword] = useState(false);
 
     const positions = [
+        "Director",
         "General Secretary",
         "DCC Secretary",
         "LCC Secretary",
