@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { CopyLinkButton } from '@/components/CopyLinkButton';
+import { CampaignActions } from '@/components/CampaignActions';
 
 export const dynamic = 'force-dynamic';
 
@@ -101,6 +102,7 @@ export default async function DashboardCampaignsPage() {
                                         of {new Intl.NumberFormat('en-NG', { style: 'currency', currency: campaign.currency }).format(campaign.targetAmount)}
                                     </span>
                                 </div>
+                                <CampaignActions campaignId={campaign.id} />
                             </CardContent>
                         </Card>
                     ))}

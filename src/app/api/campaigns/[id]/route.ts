@@ -59,6 +59,40 @@ export async function PUT(
             );
         }
 
+        // Get user details
+        const user = await prisma.user.findUnique({
+            where: { email: session.user.email! },
+            select: { id: true, role: true }
+        });
+
+        if (!user) {
+            return NextResponse.json(
+                { error: 'User not found' },
+                { status: 404 }
+            );
+        }
+
+        // Check if campaign exists and get creator
+        const existingCampaign = await prisma.campaign.findUnique({
+            where: { id: params.id },
+            select: { creatorId: true }
+        });
+
+        if (!existingCampaign) {
+            return NextResponse.json(
+                { error: 'Campaign not found' },
+                { status: 404 }
+            );
+        }
+
+        // Authorization: Only creator or SUPER_ADMIN can edit
+        if (existingCampaign.creatorId !== user.id && user.role !== 'SUPER_ADMIN') {
+            return NextResponse.json(
+                { error: 'You do not have permission to edit this campaign' },
+                { status: 403 }
+            );
+        }
+
         const body = await request.json();
         const { title, description, targetAmount, currency, status, startDate, endDate } = body;
 
